@@ -1,0 +1,25 @@
+{
+  "name": "tesuto",
+  "displayName": "Tesuto",
+  "description": "Explore and test your APIs without leaving VS Code",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [
+    
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "tesuto.helloWorld",
+        "title": "Hello World"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  }
+}
