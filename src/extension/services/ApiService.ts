@@ -1,17 +1,17 @@
-import axios from 'axios';
-import { ApiResponse } from '../../shared/types/api.types'; // we'll define later
+import axios, { AxiosRequestConfig } from 'axios';
 
 export class ApiService {
   async sendRequest(request: any): Promise<any> {
     const startTime = Date.now();
     try {
-      const response = await axios({
-        method: request.method || 'GET',
+      const config: AxiosRequestConfig = {
+        method: request.method,
         url: request.url,
         headers: request.headers || {},
         data: request.body,
         timeout: 30000
-      });
+      };
+      const response = await axios(config);
       const duration = Date.now() - startTime;
       return {
         success: true,
