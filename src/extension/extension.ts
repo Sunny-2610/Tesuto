@@ -3,10 +3,10 @@ import { SidebarProvider } from './providers/SidebarProvider';
 
 export function activate(context: vscode.ExtensionContext) {
 
-  // Create sidebar provider instance
+  console.log('Tesuto Extension Activated');
+
   const provider = new SidebarProvider(context);
 
-  // Register sidebar webview
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       'tesuto-sidebar-view',
@@ -14,11 +14,10 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  // Optional command to open sidebar
   const openCommand = vscode.commands.registerCommand(
     'tesuto.open',
-    () => {
-      vscode.commands.executeCommand(
+    async () => {
+      await vscode.commands.executeCommand(
         'workbench.view.extension.tesuto-sidebar'
       );
     }
