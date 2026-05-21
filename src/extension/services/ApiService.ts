@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse } from '@shared/types/api.types'; // we'll define later
+import { ApiResponse } from '../../shared/types/api.types'; // we'll define later
 
 export class ApiService {
   async sendRequest(request: any): Promise<any> {
