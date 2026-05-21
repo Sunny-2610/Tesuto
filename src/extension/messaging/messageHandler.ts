@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { ApiService } from '../services/ApiService';
-import { MessageType } from '@shared/constants/messageTypes';
-
+import { MessageType } from '../../shared/constants/messageTypes';
 export class MessageHandler {
   private apiService: ApiService;
   constructor(private context: vscode.ExtensionContext) {
