@@ -1,43 +1,47 @@
 import * as vscode from 'vscode';
+import { getWebviewUri } from '../utils/getWebviewUri';
+import { generateNonce } from '../utils/generateNonce';
+import { MessageHandler } from '../messaging/messageHandler';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
+  private _view?: vscode.WebviewView;
+
   constructor(private readonly _context: vscode.ExtensionContext) {}
 
   resolveWebviewView(webviewView: vscode.WebviewView) {
+    this._view = webviewView;
     webviewView.webview.options = {
-      enableScripts: true, // will be needed later for React
+      enableScripts: true,
+      localResourceRoots: [this._context.extensionUri]
     };
-    webviewView.webview.html = this._getHtml();
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+    
+    const messageHandler = new MessageHandler(this._context);
+    webviewView.webview.onDidReceiveMessage(async (message) => {
+      const response = await messageHandler.handleMessage(message);
+      if (response) {
+        webviewView.webview.postMessage(response);
+      }
+    });
   }
 
-  private _getHtml(): string {
+  private _getHtmlForWebview(webview: vscode.Webview): string {
+    const scriptUri = getWebviewUri(webview, this._context, ['dist', 'webview', 'assets', 'index.js']);
+    const styleUri = getWebviewUri(webview, this._context, ['dist', 'webview', 'assets', 'index.css']);
+    const nonce = generateNonce();
+
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
+      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Tesuto</title>
-      <style>
-        body {
-          font-family: var(--vscode-font-family);
-          color: var(--vscode-foreground);
-          background-color: var(--vscode-editor-background);
-          padding: 1rem;
-        }
-        .welcome {
-          text-align: center;
-          margin-top: 2rem;
-        }
-        h1 { font-size: 1.2rem; }
-        p { color: var(--vscode-descriptionForeground); }
-      </style>
+      <link href="${styleUri}" rel="stylesheet">
+      <title>Tesuto - API Tester</title>
     </head>
     <body>
-      <div class="welcome">
-        <h1>Tesuto API Tester</h1>
-        <p>🚀 Coming soon – send REST requests directly from VS Code.</p>
-        <p><small>Stay tuned for updates!</small></p>
-      </div>
+      <div id="root"></div>
+      <script nonce="${nonce}" src="${scriptUri}"></script>
     </body>
     </html>`;
   }
