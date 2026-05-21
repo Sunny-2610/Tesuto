@@ -2,28 +2,44 @@
   "name": "tesuto",
   "displayName": "Tesuto",
   "description": "Explore and test your APIs without leaving VS Code",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.85.0"
   },
   "main": "./out/extension.js",
   "activationEvents": [
-    "onCommand:tesuto.helloWorld"
+    "onView:tesuto-sidebar-view"
   ],
   "contributes": {
     "commands": [
       {
-        "command": "tesuto.helloWorld",
-        "title": "Hello World"
+        "command": "tesuto.open",
+        "title": "Open Tesuto"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tesuto-sidebar",
+          "title": "Tesuto",
+          "icon": "assets/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "tesuto-sidebar": [
+        {
+          "id": "tesuto-sidebar-view",
+          "name": "Tesuto"
+        }
+      ]
+    }
   },
   "scripts": {
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1",
     "@types/vscode": "^1.85.0",
     "typescript": "^5.3.0"
   }
