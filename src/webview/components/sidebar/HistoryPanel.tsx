@@ -29,10 +29,16 @@ const HistoryPanel: React.FC = () => {
       <button onClick={handleClear}>Clear All</button>
       <div>
         {history.map((item, idx) => (
-          <div key={idx} onClick={() => handleSelect(item)} style={{ cursor: 'pointer', padding: '6px', borderBottom: '1px solid #eee' }}>
-            <span style={{ fontWeight: 'bold', width: '45px', display: 'inline-block' }}>{item.request.method}</span>
-            <span>{item.request.url}</span>
-            <span style={{ float: 'right' }}>{item.response.status}</span>
+          <div
+            key={idx}
+            onClick={() => handleSelect(item)}
+            style={{ cursor: 'pointer', padding: '6px', borderBottom: '1px solid var(--vscode-panel-border)', display: 'flex', justifyContent: 'space-between' }}
+          >
+            <span>
+              <span style={{ fontWeight: 'bold', width: '45px', display: 'inline-block' }}>{item.request.method}</span>
+              <span>{item.request.url}</span>
+            </span>
+            <span>{item.response.status}</span>
           </div>
         ))}
       </div>

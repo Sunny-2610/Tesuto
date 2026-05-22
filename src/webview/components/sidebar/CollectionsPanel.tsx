@@ -4,161 +4,49 @@ import { vscodeService } from '../../services/vscodeService';
 import { MessageType } from '@shared/constants/messageTypes';
 
 const CollectionsPanel: React.FC = () => {
-
-  const {
-    collections,
-    loadCollections,
-    selectRequest
-  } = useCollectionStore();
+  const { collections, loadCollections, deleteCollection, selectRequest } = useCollectionStore();
 
   useEffect(() => {
-
-    vscodeService.postMessage(
-      MessageType.GET_COLLECTIONS,
-      {}
-    );
-
-    const unsubscribe =
-      vscodeService.onMessage((msg) => {
-
-        if (
-          msg.type ===
-          MessageType.COLLECTIONS_LIST
-        ) {
-
-          loadCollections(msg.payload);
-        }
-      });
-
+    vscodeService.postMessage(MessageType.GET_COLLECTIONS, {});
+    const unsubscribe = vscodeService.onMessage(msg => {
+      if (msg.type === MessageType.COLLECTIONS_LIST) {
+        loadCollections(msg.payload);
+      }
+    });
     return unsubscribe;
-
   }, []);
 
   const createCollection = () => {
-
-    const name =
-      window.prompt(
-        'Enter collection name'
-      );
-
-    if (!name || !name.trim()) {
-      return;
+    const name = prompt('Collection name');
+    if (name) {
+      const newCollection = { id: Date.now().toString(), name, requests: [] };
+      vscodeService.postMessage(MessageType.SAVE_COLLECTION, newCollection);
     }
-
-    const newCollection = {
-      id: Date.now().toString(),
-      name: name.trim(),
-      requests: []
-    };
-
-    vscodeService.postMessage(
-      MessageType.SAVE_COLLECTION,
-      newCollection
-    );
-  };
-
-  const handleDelete = (
-    id: string
-  ) => {
-
-    vscodeService.postMessage(
-      MessageType.DELETE_COLLECTION,
-      { id }
-    );
   };
 
   return (
-
     <div className="collections-panel">
-
-      <button
-        onClick={createCollection}
-        style={{
-          width: '100%',
-          padding: '8px',
-          marginBottom: '12px',
-          cursor: 'pointer'
-        }}
-      >
-        + New Collection
-      </button>
-
+      <button onClick={createCollection}>+ New Collection</button>
       <div>
-
-        {collections.length === 0 && (
-          <div>
-            No collections found
-          </div>
-        )}
-
-        {collections.map((coll) => (
-
-          <div
-            key={coll.id}
-            style={{
-              border: '1px solid #444',
-              borderRadius: '6px',
-              padding: '8px',
-              marginBottom: '10px'
-            }}
-          >
-
-            <div
-              style={{
-                fontWeight: 'bold',
-                marginBottom: '8px'
-              }}
-            >
-              {coll.name}
-            </div>
-
-            <div>
-
-              {coll.requests.map((req) => (
-
+        {collections.map(coll => (
+          <div key={coll.id} style={{ borderLeft: '2px solid var(--vscode-panel-border)', margin: '8px 0', paddingLeft: '8px' }}>
+            <div style={{ fontWeight: 'bold' }}>{coll.name}</div>
+            <div style={{ marginLeft: '12px' }}>
+              {coll.requests.map(req => (
                 <div
                   key={req.id}
-                  onClick={() =>
-                    selectRequest(req)
-                  }
-                  style={{
-                    cursor: 'pointer',
-                    padding: '4px'
-                  }}
+                  onClick={() => selectRequest(req)}
+                  style={{ cursor: 'pointer', padding: '4px', display: 'flex', gap: '8px', alignItems: 'center' }}
                 >
-                  <span
-                    style={{
-                      fontWeight: 'bold',
-                      marginRight: '6px'
-                    }}
-                  >
-                    {req.method}
-                  </span>
-
-                  {req.name || req.url}
-
+                  <span style={{ fontWeight: 'bold', width: '45px' }}>{req.method}</span>
+                  <span>{req.name || req.url}</span>
                 </div>
               ))}
-
             </div>
-
-            <button
-              onClick={() =>
-                handleDelete(coll.id)
-              }
-              style={{
-                marginTop: '8px',
-                cursor: 'pointer'
-              }}
-            >
-              Delete Collection
-            </button>
-
+            <button onClick={() => deleteCollection(coll.id)} style={{ marginTop: '4px' }}>Delete Collection</button>
           </div>
         ))}
-
       </div>
-
     </div>
   );
 };

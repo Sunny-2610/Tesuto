@@ -35,7 +35,6 @@ export const useRequestStore = create<RequestState>((set) => ({
   removeHeader: (idx) => set((state) => ({ headers: state.headers.filter((_, i) => i !== idx) })),
   setBody: (body) => set({ body }),
   loadFromHistory: (request) => {
-    // Convert headers object to array if needed
     let headersArray: Header[] = [];
     if (request.headers) {
       if (Array.isArray(request.headers)) {

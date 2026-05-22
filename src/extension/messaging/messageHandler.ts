@@ -20,6 +20,8 @@ export class MessageHandler {
         return { type: MessageType.COLLECTIONS_LIST, payload: CollectionStorage.getCollections() };
       case MessageType.DELETE_COLLECTION:
         return { type: MessageType.COLLECTIONS_LIST, payload: CollectionStorage.deleteCollection(message.payload.id) };
+      case MessageType.ADD_REQUEST_TO_COLLECTION:
+        return this.handleAddRequestToCollection(message.payload);
       case MessageType.GET_HISTORY:
         return { type: MessageType.HISTORY_LIST, payload: HistoryStorage.getHistory() };
       case MessageType.CLEAR_HISTORY:
@@ -32,8 +34,23 @@ export class MessageHandler {
 
   private async handleSendRequest(request: any) {
     const response = await this.apiService.sendRequest(request);
-    // Save to history
     HistoryStorage.addHistoryItem({ request, response, timestamp: Date.now() });
     return { type: MessageType.API_RESPONSE, payload: response };
+  }
+
+  private async handleAddRequestToCollection(payload: { collectionId: string; request: any }) {
+    const collections = CollectionStorage.getCollections();
+    const collection = collections.find(c => c.id === payload.collectionId);
+    if (collection) {
+      const newRequest = {
+        id: Date.now().toString(),
+        ...payload.request,
+        createdAt: Date.now()
+      };
+      collection.requests.push(newRequest);
+      CollectionStorage.saveCollection(collection);
+      return { type: MessageType.COLLECTIONS_LIST, payload: CollectionStorage.getCollections() };
+    }
+    return null;
   }
 }
