@@ -16,6 +16,7 @@ interface RequestState {
   updateHeader: (idx: number, field: keyof Header, value: string) => void;
   removeHeader: (idx: number) => void;
   setBody: (body: any) => void;
+  loadFromHistory: (request: any) => void;
 }
 
 export const useRequestStore = create<RequestState>((set) => ({
@@ -32,5 +33,22 @@ export const useRequestStore = create<RequestState>((set) => ({
     return { headers: newHeaders };
   }),
   removeHeader: (idx) => set((state) => ({ headers: state.headers.filter((_, i) => i !== idx) })),
-  setBody: (body) => set({ body })
+  setBody: (body) => set({ body }),
+  loadFromHistory: (request) => {
+    // Convert headers object to array if needed
+    let headersArray: Header[] = [];
+    if (request.headers) {
+      if (Array.isArray(request.headers)) {
+        headersArray = request.headers;
+      } else if (typeof request.headers === 'object') {
+        headersArray = Object.entries(request.headers).map(([key, value]) => ({ key, value: String(value) }));
+      }
+    }
+    set({
+      method: request.method || 'GET',
+      url: request.url || '',
+      headers: headersArray,
+      body: request.body || null
+    });
+  }
 }));
