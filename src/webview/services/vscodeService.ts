@@ -1,13 +1,42 @@
 declare const acquireVsCodeApi: any;
-const vscode = acquireVsCodeApi();
+
+const vscode =
+  typeof acquireVsCodeApi === 'function'
+    ? acquireVsCodeApi()
+    : {
+        postMessage: () => {}
+      };
 
 export const vscodeService = {
-  postMessage(type: string, payload: any) {
-    vscode.postMessage({ type, payload });
+
+  postMessage(
+    type: string,
+    payload: any
+  ) {
+
+    vscode.postMessage({
+      type,
+      payload
+    });
   },
-  onMessage(callback: (message: any) => void) {
-    const handler = (event: MessageEvent) => callback(event.data);
-    window.addEventListener('message', handler);
-    return () => window.removeEventListener('message', handler);
+
+  onMessage(
+    callback: (message: any) => void
+  ) {
+
+    const handler = (
+      event: MessageEvent
+    ) => callback(event.data);
+
+    window.addEventListener(
+      'message',
+      handler
+    );
+
+    return () =>
+      window.removeEventListener(
+        'message',
+        handler
+      );
   }
 };
