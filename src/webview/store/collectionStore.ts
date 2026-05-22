@@ -16,6 +16,12 @@ export const useCollectionStore = create<CollectionState>((set) => ({
   addCollection: (col) => set((state) => ({ collections: [...state.collections, col] })),
   deleteCollection: (id) => set((state) => ({ collections: state.collections.filter(c => c.id !== id) })),
   selectRequest: (req) => {
+    console.log('[DEBUG] selectRequest called with', req);
+    if (!req) {
+      console.error('Request is null or undefined');
+      return;
+    }
+    // Directly call loadFromHistory from the request store
     useRequestStore.getState().loadFromHistory(req);
   }
 }));

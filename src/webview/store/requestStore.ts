@@ -35,6 +35,8 @@ export const useRequestStore = create<RequestState>((set) => ({
   removeHeader: (idx) => set((state) => ({ headers: state.headers.filter((_, i) => i !== idx) })),
   setBody: (body) => set({ body }),
   loadFromHistory: (request) => {
+    console.log('[DEBUG] loadFromHistory called with', request);
+    // Normalise headers to array of {key, value}
     let headersArray: Header[] = [];
     if (request.headers) {
       if (Array.isArray(request.headers)) {
@@ -43,11 +45,13 @@ export const useRequestStore = create<RequestState>((set) => ({
         headersArray = Object.entries(request.headers).map(([key, value]) => ({ key, value: String(value) }));
       }
     }
-    set({
+    const newState = {
       method: request.method || 'GET',
       url: request.url || '',
       headers: headersArray,
-      body: request.body || null
-    });
+      body: request.body !== undefined ? request.body : null
+    };
+    console.log('[DEBUG] Updating request store to', newState);
+    set(newState);
   }
 }));
