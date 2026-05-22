@@ -17,11 +17,7 @@ const CollectionsPanel: React.FC = () => {
   }, []);
 
   const createCollection = () => {
-    const name = prompt('Collection name');
-    if (name) {
-      const newCollection = { id: Date.now().toString(), name, requests: [] };
-      vscodeService.postMessage(MessageType.SAVE_COLLECTION, newCollection);
-    }
+    vscodeService.postMessage(MessageType.PROMPT_COLLECTION_NAME, {});
   };
 
   return (
