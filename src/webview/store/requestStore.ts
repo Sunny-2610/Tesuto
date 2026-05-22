@@ -10,12 +10,14 @@ interface RequestState {
   url: string;
   headers: Header[];
   body: any;
+  auth: { type: string; token?: string } | null;
   setMethod: (method: string) => void;
   setUrl: (url: string) => void;
   addHeader: () => void;
   updateHeader: (idx: number, field: keyof Header, value: string) => void;
   removeHeader: (idx: number) => void;
   setBody: (body: any) => void;
+  setAuth: (auth: any) => void;
   loadFromHistory: (request: any) => void;
 }
 
@@ -24,6 +26,7 @@ export const useRequestStore = create<RequestState>((set) => ({
   url: '',
   headers: [],
   body: null,
+  auth: null,
   setMethod: (method) => set({ method }),
   setUrl: (url) => set({ url }),
   addHeader: () => set((state) => ({ headers: [...state.headers, { key: '', value: '' }] })),
@@ -34,9 +37,8 @@ export const useRequestStore = create<RequestState>((set) => ({
   }),
   removeHeader: (idx) => set((state) => ({ headers: state.headers.filter((_, i) => i !== idx) })),
   setBody: (body) => set({ body }),
+  setAuth: (auth) => set({ auth }),
   loadFromHistory: (request) => {
-    console.log('[DEBUG] loadFromHistory called with', request);
-    // Normalise headers to array of {key, value}
     let headersArray: Header[] = [];
     if (request.headers) {
       if (Array.isArray(request.headers)) {
@@ -45,13 +47,12 @@ export const useRequestStore = create<RequestState>((set) => ({
         headersArray = Object.entries(request.headers).map(([key, value]) => ({ key, value: String(value) }));
       }
     }
-    const newState = {
+    set({
       method: request.method || 'GET',
       url: request.url || '',
       headers: headersArray,
-      body: request.body !== undefined ? request.body : null
-    };
-    console.log('[DEBUG] Updating request store to', newState);
-    set(newState);
+      body: request.body !== undefined ? request.body : null,
+      auth: request.auth || null
+    });
   }
 }));

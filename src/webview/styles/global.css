@@ -1,11 +1,106 @@
+:root {
+  --vscode-font-family: var(--vscode-editor-font-family);
+  --bg-primary: var(--vscode-sideBar-background);
+  --bg-secondary: var(--vscode-editor-background);
+  --border: var(--vscode-panel-border);
+  --text: var(--vscode-foreground);
+  --text-secondary: var(--vscode-descriptionForeground);
+  --button-bg: var(--vscode-button-background);
+  --button-hover: var(--vscode-button-hoverBackground);
+}
+
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
+
 body {
   font-family: var(--vscode-font-family);
-  color: var(--vscode-foreground);
-  background-color: var(--vscode-editor-background);
-  padding: 1rem;
+  color: var(--text);
+  background-color: var(--bg-secondary);
+  font-size: 13px;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Collections, History, Tokens panels */
+.collections-panel, .history-panel, .token-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.collection-item {
+  border-left: 2px solid var(--border);
+  margin-bottom: 8px;
+  padding-left: 8px;
+}
+.collection-name {
+  font-weight: bold;
+  cursor: pointer;
+}
+.collection-requests {
+  margin-left: 12px;
+}
+.request-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.request-item:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+.method {
+  font-weight: bold;
+  width: 45px;
+}
+.method.get { color: #61affe; }
+.method.post { color: #49cc90; }
+.method.put { color: #fca130; }
+.method.delete { color: #f93e3e; }
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.status-badge {
+  background-color: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 11px;
+}
+
+.token-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.token-value {
+  font-family: monospace;
+  word-break: break-all;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
