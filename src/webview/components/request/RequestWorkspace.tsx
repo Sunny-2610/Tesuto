@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import MethodSelector from './MethodSelector';
 import HeadersEditor from './HeadersEditor';
 import BodyEditor from './BodyEditor';
+import AuthEditor from './AuthEditor';
+import TestsEditor from './TestsEditor';
+import EnvironmentSelector from './EnvironmentSelector';
 import { useRequestStore } from '../../store/requestStore';
 import { useResponseStore } from '../../store/responseStore';
 import { vscodeService } from '../../services/vscodeService';
@@ -9,7 +12,7 @@ import { validateRequest } from '@shared/validators/requestValidator';
 import { MessageType } from '@shared/constants/messageTypes';
 import { useCollectionStore } from '../../store/collectionStore';
 
-type TabType = 'headers' | 'body';
+type TabType = 'headers' | 'body' | 'auth' | 'tests';
 
 const RequestWorkspace: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('headers');
@@ -18,7 +21,6 @@ const RequestWorkspace: React.FC = () => {
   const { collections, loadCollections } = useCollectionStore();
   const [selectedCollectionId, setSelectedCollectionId] = useState<string>('');
 
-  // Load collections for the dropdown
   useEffect(() => {
     vscodeService.postMessage(MessageType.GET_COLLECTIONS, {});
     const unsubscribe = vscodeService.onMessage(msg => {
@@ -36,7 +38,6 @@ const RequestWorkspace: React.FC = () => {
       return;
     }
     setLoading(true);
-    // Convert headers array to object
     const headersObj: Record<string, string> = {};
     headers.forEach(h => { if (h.key) headersObj[h.key] = h.value; });
     vscodeService.postMessage(MessageType.SEND_REQUEST, { method, url, headers: headersObj, body });
@@ -44,20 +45,13 @@ const RequestWorkspace: React.FC = () => {
 
   const saveToCollection = () => {
     if (!selectedCollectionId) {
-      // You could use vscode window show warning, but simple alert for now
       alert('Select a collection first');
       return;
     }
     const headersObj: Record<string, string> = {};
     headers.forEach(h => { if (h.key) headersObj[h.key] = h.value; });
     const name = prompt('Name for this request (optional)') || url;
-    const requestToSave = {
-      name,
-      method,
-      url,
-      headers: headersObj,
-      body
-    };
+    const requestToSave = { name, method, url, headers: headersObj, body: body !== null ? body : undefined };
     vscodeService.postMessage(MessageType.ADD_REQUEST_TO_COLLECTION, {
       collectionId: selectedCollectionId,
       request: requestToSave
@@ -66,7 +60,7 @@ const RequestWorkspace: React.FC = () => {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <MethodSelector />
         <input
           type="text"
@@ -86,13 +80,20 @@ const RequestWorkspace: React.FC = () => {
         </select>
         <button onClick={saveToCollection}>Save</button>
       </div>
+      <div style={{ marginBottom: '1rem' }}>
+        <EnvironmentSelector />
+      </div>
       <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--vscode-panel-border)', marginBottom: '1rem' }}>
         <button onClick={() => setActiveTab('headers')} style={activeTab === 'headers' ? { fontWeight: 'bold' } : {}}>Headers</button>
         <button onClick={() => setActiveTab('body')} style={activeTab === 'body' ? { fontWeight: 'bold' } : {}}>Body</button>
+        <button onClick={() => setActiveTab('auth')} style={activeTab === 'auth' ? { fontWeight: 'bold' } : {}}>Auth</button>
+        <button onClick={() => setActiveTab('tests')} style={activeTab === 'tests' ? { fontWeight: 'bold' } : {}}>Tests</button>
       </div>
       <div>
         {activeTab === 'headers' && <HeadersEditor />}
         {activeTab === 'body' && <BodyEditor />}
+        {activeTab === 'auth' && <AuthEditor />}
+        {activeTab === 'tests' && <TestsEditor />}
       </div>
     </div>
   );
