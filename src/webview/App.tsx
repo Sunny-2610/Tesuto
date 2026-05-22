@@ -4,6 +4,7 @@ import HistoryPanel from './components/sidebar/HistoryPanel';
 import TokenPanel from './components/sidebar/TokenPanel';
 import RequestWorkspace from './components/request/RequestWorkspace';
 import ResponsePanel from './components/response/ResponsePanel';
+import './styles/global.css';
 
 type SidebarTab = 'collections' | 'history' | 'tokens';
 
@@ -11,53 +12,39 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<SidebarTab>('collections');
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <div style={{ width: '260px', borderRight: '1px solid var(--vscode-panel-border)', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--vscode-panel-border)' }}>
+    <div className="app-container">
+      <div className="sidebar">
+        <div className="sidebar-tabs">
           <button
-            style={{
-              flex: 1,
-              padding: '8px',
-              background: activeTab === 'collections' ? 'var(--vscode-editor-background)' : 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`sidebar-tab ${activeTab === 'collections' ? 'active' : ''}`}
             onClick={() => setActiveTab('collections')}
           >
             Collections
           </button>
+
           <button
-            style={{
-              flex: 1,
-              padding: '8px',
-              background: activeTab === 'history' ? 'var(--vscode-editor-background)' : 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`sidebar-tab ${activeTab === 'history' ? 'active' : ''}`}
             onClick={() => setActiveTab('history')}
           >
             History
           </button>
+
           <button
-            style={{
-              flex: 1,
-              padding: '8px',
-              background: activeTab === 'tokens' ? 'var(--vscode-editor-background)' : 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className={`sidebar-tab ${activeTab === 'tokens' ? 'active' : ''}`}
             onClick={() => setActiveTab('tokens')}
           >
             Tokens
           </button>
         </div>
-        <div style={{ padding: '8px' }}>
+
+        <div className="sidebar-content">
           {activeTab === 'collections' && <CollectionsPanel />}
           {activeTab === 'history' && <HistoryPanel />}
           {activeTab === 'tokens' && <TokenPanel />}
         </div>
       </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+
+      <div className="main-workspace">
         <RequestWorkspace />
         <ResponsePanel />
       </div>
