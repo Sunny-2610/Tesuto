@@ -25,28 +25,35 @@ const CollectionsPanel: React.FC = () => {
   };
 
   return (
-    <div className="collections-panel">
+    <div style={{ padding: '4px' }}>
       <button onClick={createCollection}>+ New Collection</button>
-      <div>
-        {collections.map(coll => (
-          <div key={coll.id} style={{ borderLeft: '2px solid var(--vscode-panel-border)', margin: '8px 0', paddingLeft: '8px' }}>
-            <div style={{ fontWeight: 'bold' }}>{coll.name}</div>
-            <div style={{ marginLeft: '12px' }}>
-              {coll.requests.map(req => (
-                <div
-                  key={req.id}
-                  onClick={() => selectRequest(req)}
-                  style={{ cursor: 'pointer', padding: '4px', display: 'flex', gap: '8px', alignItems: 'center' }}
-                >
-                  <span style={{ fontWeight: 'bold', width: '45px' }}>{req.method}</span>
-                  <span>{req.name || req.url}</span>
-                </div>
-              ))}
-            </div>
-            <button onClick={() => deleteCollection(coll.id)} style={{ marginTop: '4px' }}>Delete Collection</button>
+      {collections.map(coll => (
+        <div key={coll.id} style={{ marginTop: '12px', borderLeft: '2px solid #ccc', paddingLeft: '8px' }}>
+          <strong>{coll.name}</strong>
+          <div style={{ marginLeft: '12px' }}>
+            {coll.requests.map(req => (
+              <div
+                key={req.id}
+                onClick={() => {
+                  console.log('[UI] Request clicked', req);
+                  selectRequest(req);
+                }}
+                style={{
+                  cursor: 'pointer',
+                  padding: '4px',
+                  margin: '2px 0',
+                  background: 'var(--vscode-list-hoverBackground)',
+                  borderRadius: '3px'
+                }}
+              >
+                <span style={{ fontWeight: 'bold', width: '45px', display: 'inline-block' }}>{req.method}</span>
+                {req.name || req.url}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+          <button onClick={() => deleteCollection(coll.id)} style={{ marginTop: '6px', fontSize: '11px' }}>Delete Collection</button>
+        </div>
+      ))}
     </div>
   );
 };
