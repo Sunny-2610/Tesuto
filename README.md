@@ -1,71 +1,76 @@
-# tesuto README
+# Tesuto
 
-This is the README for your extension "tesuto". After writing up a brief description, we recommend including the following sections.
+[![VS Code Version](https://img.shields.io/badge/VS%20Code-%5E1.85.0-blue.svg)](https://code.visualstudio.com/updates)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+&gt; **Test APIs without leaving VS Code.**  
+&gt; A lightweight, fast, and intuitive API client built directly into your editor sidebar.
 
 ---
 
-## Following extension guidelines
+## Table of Contents
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Commands](#commands)
+- [Architecture](#architecture)
+- [Contributing](#contributing)
+- [Release Notes](#release-notes)
+- [License](#license)
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+---
 
-## Working with Markdown
+## Features
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+### Core API Testing
+- **Send HTTP requests** — GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS
+- **Custom headers** — Key-value editor with add/remove
+- **JSON body editor** — Syntax-aware with validation feedback
+- **Bearer token authentication** — Secure token storage with masking
+- **Environment selector** — Switch between Development, Staging, Production
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+### Collections
+- **Organize requests** into named collections
+- **Save requests** with metadata (name, method, URL, headers, body)
+- **One-click replay** — Load saved requests directly into the workspace
+- **Persistent storage** — Collections survive across VS Code sessions
 
-## For more information
+### History
+- **Automatic request logging** — Every sent request is tracked
+- **Quick replay** — Click any history item to restore and resend
+- **Clear history** — One-click cleanup
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+### Token Management
+- **Secure token storage** — JWTs and API keys with visual masking
+- **Active token injection** — Automatically adds `Authorization: Bearer` header
+- **Per-token activation** — Toggle which token is active per session
 
-**Enjoy!**
+### Native VS Code Integration
+- **Sidebar webview** — Lives in the Activity Bar, no panel juggling
+- **Dark theme native** — Uses VS Code CSS variables for seamless theming
+- **Command palette integration** — Open Tesuto from anywhere
+
+---
+
+## Requirements
+
+| Dependency | Version |
+|------------|---------|
+| VS Code | `^1.85.0` |
+| Node.js | `&gt;=18.0.0` |
+| npm | `&gt;=9.0.0` |
+
+---
+
+## Installation
+
+### From Source (Development)
+
+```bash
+git clone https://github.com/your-name/tesuto.git
+cd tesuto
+npm install
+npm run compile
+npm run dev
