@@ -5,19 +5,20 @@ import { MessageType } from '@shared/constants/messageTypes';
 import { useRequestStore } from '../../store/requestStore';
 
 const HistoryPanel: React.FC = () => {
-  const { history, loadHistory, clearHistory } = useHistoryStore();
+  const { history, loadHistory } = useHistoryStore();
 
   useEffect(() => {
     vscodeService.postMessage(MessageType.GET_HISTORY, {});
     const unsubscribe = vscodeService.onMessage(msg => {
-      if (msg.type === MessageType.HISTORY_LIST) loadHistory(msg.payload);
+      if (msg.type === MessageType.HISTORY_LIST) {
+        loadHistory(msg.payload);
+      }
     });
     return unsubscribe;
   }, []);
 
   const handleClear = () => {
     vscodeService.postMessage(MessageType.CLEAR_HISTORY, {});
-    clearHistory();
   };
 
   const handleSelect = (item: any) => {

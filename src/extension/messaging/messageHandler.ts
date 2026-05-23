@@ -13,13 +13,12 @@ export class MessageHandler {
 
   async handleMessage(message: any): Promise<any> {
     switch (message.type) {
-      // API requests
       case MessageType.SEND_REQUEST:
         return this.handleSendRequest(message.payload);
-
-      // Collections
       case MessageType.PROMPT_COLLECTION_NAME:
         return this.handlePromptCollectionName();
+      case MessageType.PROMPT_TOKEN:
+        return this.handlePromptToken();
       case MessageType.SAVE_COLLECTION:
         return { type: MessageType.COLLECTIONS_LIST, payload: CollectionStorage.saveCollection(message.payload) };
       case MessageType.GET_COLLECTIONS:
@@ -28,15 +27,11 @@ export class MessageHandler {
         return { type: MessageType.COLLECTIONS_LIST, payload: CollectionStorage.deleteCollection(message.payload.id) };
       case MessageType.ADD_REQUEST_TO_COLLECTION:
         return this.handleAddRequestToCollection(message.payload);
-
-      // History
       case MessageType.GET_HISTORY:
         return { type: MessageType.HISTORY_LIST, payload: HistoryStorage.getHistory() };
       case MessageType.CLEAR_HISTORY:
         HistoryStorage.clearHistory();
         return { type: MessageType.HISTORY_LIST, payload: [] };
-
-      // Tokens
       case MessageType.SAVE_TOKEN:
         TokenStorage.saveToken(message.payload);
         return { type: MessageType.TOKENS_LIST, payload: TokenStorage.getTokens() };
@@ -48,7 +43,6 @@ export class MessageHandler {
       case MessageType.SET_ACTIVE_TOKEN:
         TokenStorage.setActiveToken(message.payload.id);
         return { type: MessageType.TOKENS_LIST, payload: TokenStorage.getTokens() };
-
       default:
         return null;
     }
@@ -79,6 +73,38 @@ export class MessageHandler {
       return { type: MessageType.COLLECTIONS_LIST, payload: collections };
     }
     return null;
+  }
+
+  private async handlePromptToken() {
+    const name = await vscode.window.showInputBox({
+      prompt: 'Enter token name',
+      placeHolder: 'e.g. Production API Key',
+      validateInput: (value) => {
+        if (!value?.trim()) return 'Token name is required';
+        return null;
+      }
+    });
+    if (!name?.trim()) return null;
+
+    const value = await vscode.window.showInputBox({
+      prompt: `Enter value for "${name.trim()}"`,
+      placeHolder: 'eyJhbGciOiJIUzI1NiIs...',
+      password: true,
+      validateInput: (value) => {
+        if (!value?.trim()) return 'Token value is required';
+        return null;
+      }
+    });
+    if (!value?.trim()) return null;
+
+    const newToken = {
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 9),
+      name: name.trim(),
+      value: value.trim(),
+      masked: true
+    };
+    TokenStorage.saveToken(newToken);
+    return { type: MessageType.TOKENS_LIST, payload: TokenStorage.getTokens() };
   }
 
   private async handleAddRequestToCollection(payload: { collectionId: string; request: any }) {

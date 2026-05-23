@@ -4,7 +4,7 @@ import { vscodeService } from '../../services/vscodeService';
 import { MessageType } from '@shared/constants/messageTypes';
 
 const CollectionsPanel: React.FC = () => {
-  const { collections, loadCollections, deleteCollection, selectRequest } = useCollectionStore();
+  const { collections, loadCollections, selectRequest } = useCollectionStore();
 
   useEffect(() => {
     vscodeService.postMessage(MessageType.GET_COLLECTIONS, {});
@@ -18,6 +18,10 @@ const CollectionsPanel: React.FC = () => {
 
   const createCollection = () => {
     vscodeService.postMessage(MessageType.PROMPT_COLLECTION_NAME, {});
+  };
+
+  const deleteCollection = (id: string) => {
+    vscodeService.postMessage(MessageType.DELETE_COLLECTION, { id });
   };
 
   return (
