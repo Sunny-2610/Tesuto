@@ -7,7 +7,7 @@ import ResponsePanel from './components/response/ResponsePanel';
 import './styles/global.css';
 
 type SidebarTab = 'collections' | 'history' | 'tokens';
-
+// finally really happy with this project
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<SidebarTab>('collections');
 
