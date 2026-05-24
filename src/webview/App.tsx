@@ -19,21 +19,21 @@ const App: React.FC = () => {
             className={`sidebar-tab ${activeTab === 'collections' ? 'active' : ''}`}
             onClick={() => setActiveTab('collections')}
           >
-            Collections
+            <span>📁</span> Collections
           </button>
 
           <button
             className={`sidebar-tab ${activeTab === 'history' ? 'active' : ''}`}
             onClick={() => setActiveTab('history')}
           >
-            History
+            <span>🕐</span> History
           </button>
 
           <button
             className={`sidebar-tab ${activeTab === 'tokens' ? 'active' : ''}`}
             onClick={() => setActiveTab('tokens')}
           >
-            Tokens
+            <span>🔑</span> Tokens
           </button>
         </div>
 

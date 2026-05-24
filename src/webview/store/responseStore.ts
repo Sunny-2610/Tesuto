@@ -6,6 +6,7 @@ interface ResponseState {
   loading: boolean;
   success: boolean;
   status: number;
+  statusText: string;
   duration: number;
   size: number;
   data: any;
@@ -21,6 +22,7 @@ export const useResponseStore = create<ResponseState>((set) => {
         loading: false,
         success: msg.payload.success,
         status: msg.payload.status,
+        statusText: msg.payload.statusText || '',
         duration: msg.payload.duration,
         size: msg.payload.size,
         data: msg.payload.data,
@@ -32,6 +34,7 @@ export const useResponseStore = create<ResponseState>((set) => {
     loading: false,
     success: false,
     status: 0,
+    statusText: '',
     duration: 0,
     size: 0,
     data: null,

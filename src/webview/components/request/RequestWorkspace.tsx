@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MethodSelector from './MethodSelector';
 import HeadersEditor from './HeadersEditor';
 import BodyEditor from './BodyEditor';
@@ -24,14 +24,12 @@ const RequestWorkspace: React.FC = () => {
   useEffect(() => {
     vscodeService.postMessage(MessageType.GET_COLLECTIONS, {});
     const unsubscribe = vscodeService.onMessage(msg => {
-      if (msg.type === MessageType.COLLECTIONS_LIST) {
-        loadCollections(msg.payload);
-      }
+      if (msg.type === MessageType.COLLECTIONS_LIST) loadCollections(msg.payload);
     });
     return unsubscribe;
   }, []);
 
-  const sendRequest = () => {
+  const sendRequest = useCallback(() => {
     const validation = validateRequest({ url, method });
     if (!validation.valid) {
       setResponse({ success: false, error: validation.error });
@@ -41,55 +39,98 @@ const RequestWorkspace: React.FC = () => {
     const headersObj: Record<string, string> = {};
     headers.forEach(h => { if (h.key) headersObj[h.key] = h.value; });
     vscodeService.postMessage(MessageType.SEND_REQUEST, { method, url, headers: headersObj, body });
-  };
+  }, [url, method, headers, body, setLoading, setResponse]);
 
-  const saveToCollection = () => {
+  const saveToCollection = useCallback(() => {
     if (!selectedCollectionId) {
-      alert('Select a collection first');
+      setResponse({ success: false, error: 'Select a collection first' });
       return;
     }
     const headersObj: Record<string, string> = {};
     headers.forEach(h => { if (h.key) headersObj[h.key] = h.value; });
-    const name = prompt('Name for this request (optional)') || url;
-    const requestToSave = { name, method, url, headers: headersObj, body: body !== null ? body : undefined };
-    vscodeService.postMessage(MessageType.ADD_REQUEST_TO_COLLECTION, {
+    const requestPayload = { method, url, headers: headersObj, body: body !== null ? body : undefined };
+    vscodeService.postMessage(MessageType.PROMPT_REQUEST_NAME, {
       collectionId: selectedCollectionId,
-      request: requestToSave
+      request: requestPayload
     });
-  };
+  }, [selectedCollectionId, method, url, headers, body, setResponse]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        sendRequest();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [sendRequest]);
+
+  const headerCount = headers.filter(h => h.key).length;
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+    <div className="request-workspace">
+      <div className="url-bar">
         <MethodSelector />
         <input
           type="text"
+          className="input url-input"
           placeholder="https://api.example.com/endpoint"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          style={{ flex: 1, minWidth: '200px' }}
         />
-        <button onClick={sendRequest}>Send</button>
-        <select
-          value={selectedCollectionId}
-          onChange={(e) => setSelectedCollectionId(e.target.value)}
-          style={{ width: '130px' }}
-        >
-          <option value="">Save to...</option>
-          {collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
-        <button onClick={saveToCollection}>Save</button>
+        <button className="btn btn-primary btn-lg send-btn" onClick={sendRequest}>
+          <span className="btn-icon">▶</span> Send
+        </button>
       </div>
-      <div style={{ marginBottom: '1rem' }}>
+
+      <div className="action-bar">
         <EnvironmentSelector />
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <select
+            className="select"
+            value={selectedCollectionId}
+            onChange={(e) => setSelectedCollectionId(e.target.value)}
+            style={{ minWidth: '140px' }}
+          >
+            <option value="">Save to collection...</option>
+            {collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+          <button className="btn btn-ghost btn-sm" onClick={saveToCollection}>
+            💾 Save
+          </button>
+        </div>
       </div>
-      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--vscode-panel-border)', marginBottom: '1rem' }}>
-        <button onClick={() => setActiveTab('headers')} style={activeTab === 'headers' ? { fontWeight: 'bold' } : {}}>Headers</button>
-        <button onClick={() => setActiveTab('body')} style={activeTab === 'body' ? { fontWeight: 'bold' } : {}}>Body</button>
-        <button onClick={() => setActiveTab('auth')} style={activeTab === 'auth' ? { fontWeight: 'bold' } : {}}>Auth</button>
-        <button onClick={() => setActiveTab('tests')} style={activeTab === 'tests' ? { fontWeight: 'bold' } : {}}>Tests</button>
+
+      <div className="request-tabs">
+        <button
+          className={`request-tab ${activeTab === 'headers' ? 'active' : ''}`}
+          onClick={() => setActiveTab('headers')}
+        >
+          Headers
+          {headerCount > 0 && <span className="tab-badge">{headerCount}</span>}
+        </button>
+        <button
+          className={`request-tab ${activeTab === 'body' ? 'active' : ''}`}
+          onClick={() => setActiveTab('body')}
+        >
+          Body
+        </button>
+        <button
+          className={`request-tab ${activeTab === 'auth' ? 'active' : ''}`}
+          onClick={() => setActiveTab('auth')}
+        >
+          Auth
+        </button>
+        <button
+          className={`request-tab ${activeTab === 'tests' ? 'active' : ''}`}
+          onClick={() => setActiveTab('tests')}
+        >
+          Tests
+        </button>
       </div>
-      <div>
+
+      <div className="tab-content">
         {activeTab === 'headers' && <HeadersEditor />}
         {activeTab === 'body' && <BodyEditor />}
         {activeTab === 'auth' && <AuthEditor />}
