@@ -3,7 +3,15 @@
   "displayName": "Tesuto",
   "description": "Explore and test your APIs without leaving VS Code",
   "version": "0.1.0",
-  "publisher": "your-name",
+  "publisher": "SunnySinha",
+  "icon": "assets/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sunny-2610/Tesuto"
+  },
+  "categories": ["Other"],
+  "keywords": ["api", "rest", "http", "client", "tester"],
+  "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -38,7 +46,7 @@
     }
   },
   "scripts": {
-    "compile": "tsc && tsc-alias && vite build",
+    "compile": "node esbuild.js && vite build",
     "watch": "tsc-watch --onSuccess \"tsc-alias\"",
     "build:webview": "vite build",
     "dev": "npm run compile && code --extensionDevelopmentPath=."
@@ -49,6 +57,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/vscode": "^1.85.0",
     "@vitejs/plugin-react": "^6.0.2",
+    "esbuild": "^0.25.0",
     "tsc-alias": "^1.8.16",
     "tsc-watch": "^6.2.1",
     "typescript": "^5.3.0",
@@ -58,7 +67,6 @@
     "axios": "^1.16.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "sharp": "^0.34.5",
     "zustand": "^5.0.13"
   }
 }
